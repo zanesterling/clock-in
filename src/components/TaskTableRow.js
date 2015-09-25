@@ -15,6 +15,7 @@ var TaskTableRow = React.createClass({
 
 	render: function() {
 		var task = this.props.task;
+		var hoursThisWeek = task.hoursThisWeek;
 
 		var clockInButton = (
 			<button
@@ -38,7 +39,7 @@ var TaskTableRow = React.createClass({
 				</td>
 				<td
 					style={CELL_STYLE}>
-					{task.hoursThisWeek + '/' + task.hoursPerWeek}
+					{hoursThisWeek.toFixed(2) + '/' + task.hoursPerWeek}
 				</td>
 				{clockInCell}
 			</tr>
