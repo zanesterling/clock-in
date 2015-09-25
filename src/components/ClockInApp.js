@@ -4,6 +4,7 @@ var React = require('react/addons');
 
 var TaskTable = require('./TaskTable');
 var AddTaskInterface = require('./AddTaskInterface');
+var ClockedInDisplay = require('./ClockedInDisplay');
 
 var MAIN_STYLE = {
 	textAlign: 'center',
@@ -13,6 +14,7 @@ var ClockInApp = React.createClass({
 	getInitialState: function() {
 		return {
 			clockedIn: false,
+			lastClockedIn: null,
 			currentTask: null,
 			tasks: [
 				{
@@ -25,15 +27,28 @@ var ClockInApp = React.createClass({
 	},
 
 	clockOut: function() {
+		var timeClocked = new Date().getTime() - this.state.lastClockedIn;
+		var hoursClocked = timeClocked / (3600 * 1000);
+
+		var tasks = JSON.parse(JSON.stringify(this.state.tasks));
+		for (var task of tasks) {
+			if (task.name === this.state.currentTask) {
+				task.hoursThisWeek += hoursClocked;
+				console.log(task.name);
+			}
+		}
+
 		this.setState({
 			clockedIn: false,
 			currentTask: null,
+			tasks: tasks,
 		});
 	},
 
 	clockIn: function(taskName) {
 		this.setState({
 			clockedIn: true,
+			lastClockedIn: new Date().getTime(),
 			currentTask: taskName,
 		});
 	},
@@ -56,19 +71,24 @@ var ClockInApp = React.createClass({
 	},
 
 	render: function() {
-		var clockedInButton = this.state.clockedIn ?
-			<button onClick={this.clockOut}>Clock out</button> :
-			null;
+		var clockedInDisplay = null;
+		if (this.state.clockedIn) {
+			clockedInDisplay = <ClockedInDisplay
+				currentTask={this.state.currentTask}
+				clockOut={this.clockOut}
+			/>;
+		}
 
 		return (
 			<div style={MAIN_STYLE} className='main'>
+				{clockedInDisplay}
+				<br />
 				<TaskTable
 					tasks={this.state.tasks}
 					clockedIn={this.state.clockedIn}
 					clockInFunc={this.clockIn}
 				/>
 				<br />
-				{clockedInButton}
 				<AddTaskInterface addTask={this.addTask} />
 			</div>
 		);
