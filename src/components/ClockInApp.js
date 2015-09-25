@@ -26,6 +26,22 @@ var ClockInApp = React.createClass({
 		};
 	},
 
+	componentDidMount() {
+		this.loadStateFromCookie();
+
+		setInterval(function() {
+			this.forceUpdate();
+		}.bind(this), 30);
+	},
+
+	saveStateToCookie: function() {
+		document.cookie = JSON.stringify(this.state.tasks);
+	},
+
+	loadStateFromCookie: function() {
+		this.setState({ tasks: JSON.parse(document.cookie) });
+	},
+
 	clockOut: function() {
 		var timeClocked = new Date().getTime() - this.state.lastClockedIn;
 		var hoursClocked = timeClocked / (3600 * 1000);
@@ -42,7 +58,7 @@ var ClockInApp = React.createClass({
 			clockedIn: false,
 			currentTask: null,
 			tasks: tasks,
-		});
+		}, this.saveStateToCookie);
 	},
 
 	clockIn: function(taskName) {
@@ -66,8 +82,7 @@ var ClockInApp = React.createClass({
 			hoursThisWeek: 0,
 		});
 
-		console.log(tasks);
-		this.setState({ tasks: tasks });
+		this.setState({ tasks: tasks }, this.saveStateToCookie);
 	},
 
 	render: function() {
@@ -76,6 +91,7 @@ var ClockInApp = React.createClass({
 			clockedInDisplay = <ClockedInDisplay
 				currentTask={this.state.currentTask}
 				clockOut={this.clockOut}
+				lastClockedIn={this.state.lastClockedIn}
 			/>;
 		}
 
@@ -83,12 +99,14 @@ var ClockInApp = React.createClass({
 			<div style={MAIN_STYLE} className='main'>
 				{clockedInDisplay}
 				<br />
+
 				<TaskTable
 					tasks={this.state.tasks}
 					clockedIn={this.state.clockedIn}
 					clockInFunc={this.clockIn}
 				/>
-				<br />
+				<br /><br />
+
 				<AddTaskInterface addTask={this.addTask} />
 			</div>
 		);

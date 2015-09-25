@@ -39,7 +39,7 @@ var TaskTableRow = React.createClass({
 				</td>
 				<td
 					style={CELL_STYLE}>
-					{hoursThisWeek.toFixed(2) + '/' + task.hoursPerWeek}
+					{hoursThisWeek.toFixed(4) + '/' + task.hoursPerWeek}
 				</td>
 				{clockInCell}
 			</tr>
