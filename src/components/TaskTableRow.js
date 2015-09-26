@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react/addons');
+var Duration = require('duration-js');
 
 var CELL_STYLE = {
 	border: 'black solid 1px',
@@ -15,7 +16,8 @@ var TaskTableRow = React.createClass({
 
 	render: function() {
 		var task = this.props.task;
-		var hoursThisWeek = task.hoursThisWeek;
+		var timeThisWeek = task.timeThisWeek;
+		timeThisWeek -= timeThisWeek % 1000;
 
 		var clockInButton = (
 			<button
@@ -39,7 +41,11 @@ var TaskTableRow = React.createClass({
 				</td>
 				<td
 					style={CELL_STYLE}>
-					{hoursThisWeek.toFixed(4) + '/' + task.hoursPerWeek}
+					{new Duration(timeThisWeek).toString()}
+				</td>
+				<td
+					style={CELL_STYLE}>
+					{task.hoursPerWeek}h
 				</td>
 				{clockInCell}
 			</tr>

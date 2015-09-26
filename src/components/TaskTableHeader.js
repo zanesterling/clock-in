@@ -20,7 +20,8 @@ var TaskTableHeader = React.createClass({
 		return (
 			<tr>
 				<th style={style}>Task</th>
-				<th style={style}>Hours</th>
+				<th style={style}>Worked</th>
+				<th style={style}>Goal</th>
 				{clockInHeader}
 			</tr>
 		);

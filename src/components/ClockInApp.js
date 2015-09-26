@@ -16,18 +16,16 @@ var ClockInApp = React.createClass({
 			clockedIn: false,
 			lastClockedIn: null,
 			currentTask: null,
-			tasks: [
-				{
-					name: 'vision',
-					hoursPerWeek: 10,
-					hoursThisWeek: 0,
-				}
-			],
+			tasks: [],
 		};
 	},
 
 	componentDidMount() {
-		this.loadStateFromCookie();
+		if (document.cookie) {
+			this.loadStateFromCookie();
+		} else {
+			this.reset();
+		}
 
 		setInterval(function() {
 			this.forceUpdate();
@@ -42,15 +40,24 @@ var ClockInApp = React.createClass({
 		this.setState({ tasks: JSON.parse(document.cookie) });
 	},
 
+	reset: function() {
+		document.cookie = '';
+		this.setState({
+			tasks: [{
+				name: 'vision',
+				hoursPerWeek: 10,
+				timeThisWeek: 0,
+			}]
+		});
+	},
+
 	clockOut: function() {
-		var timeClocked = new Date().getTime() - this.state.lastClockedIn;
-		var hoursClocked = timeClocked / (3600 * 1000);
+		var timeClocked = new Date() - this.state.lastClockedIn;
 
 		var tasks = JSON.parse(JSON.stringify(this.state.tasks));
 		for (var task of tasks) {
 			if (task.name === this.state.currentTask) {
-				task.hoursThisWeek += hoursClocked;
-				console.log(task.name);
+				task.timeThisWeek += timeClocked;
 			}
 		}
 
@@ -64,7 +71,7 @@ var ClockInApp = React.createClass({
 	clockIn: function(taskName) {
 		this.setState({
 			clockedIn: true,
-			lastClockedIn: new Date().getTime(),
+			lastClockedIn: new Date(),
 			currentTask: taskName,
 		});
 	},
@@ -79,7 +86,7 @@ var ClockInApp = React.createClass({
 		tasks.push({
 			name: taskName,
 			hoursPerWeek: taskHours,
-			hoursThisWeek: 0,
+			timeThisWeek: 0,
 		});
 
 		this.setState({ tasks: tasks }, this.saveStateToCookie);
@@ -108,6 +115,9 @@ var ClockInApp = React.createClass({
 				<br /><br />
 
 				<AddTaskInterface addTask={this.addTask} />
+				<br /><br />
+
+				<button onclick={this.reset}>Reset</button>
 			</div>
 		);
 	}
