@@ -6,6 +6,7 @@ var TaskTable = require('./TaskTable');
 var AddTaskInterface = require('./AddTaskInterface');
 var ClockedInDisplay = require('./ClockedInDisplay');
 
+
 var MAIN_STYLE = {
 	textAlign: 'center',
 };
@@ -41,14 +42,12 @@ var ClockInApp = React.createClass({
 	},
 
 	reset: function() {
-		document.cookie = '';
 		this.setState({
-			tasks: [{
-				name: 'vision',
-				hoursPerWeek: 10,
-				timeThisWeek: 0,
-			}]
-		});
+			tasks: this.state.tasks.map(task => {
+				task.timeThisWeek = 0;
+				return task;
+			})
+		}, this.saveStateToCookie);
 	},
 
 	clockOut: function() {
@@ -117,7 +116,7 @@ var ClockInApp = React.createClass({
 				<AddTaskInterface addTask={this.addTask} />
 				<br /><br />
 
-				<button onclick={this.reset}>Reset</button>
+				<button onClick={this.reset}>Reset</button>
 			</div>
 		);
 	}
